@@ -15,13 +15,21 @@ enum Category {
   Angular
 }
 
+interface DamageLogger {
+  (reason: string): void;
+}
+
 interface Book {
   id: number;
   title: string;
   author: string;
   available: boolean;
   category: Category;
+  pages?: number;
+  markDamaged?: DamageLogger;
 };
+
+
 
 const getAllBooks = () => {
   const books: readonly Book[] = <const>[ 
@@ -122,7 +130,9 @@ const getBookAuthorByIndex = (index: number): [string, string] => {
 
 getBookTitlesByCategory(Category.JavaScript).forEach((val, id) => console.log(++id + ' - ' + val));
 
-const getBookByID = (id: number): Book | undefined => {
+type BookOrUndefined = Book | undefined;
+
+const getBookByID = (id: number): BookOrUndefined => {
   return getAllBooks().find((item) => item.id === id)
 };
 
@@ -224,10 +234,168 @@ const bookTitleTransform = (title: any) => {
 
 console.log(bookTitleTransform(getAllBooks()[0].title));
 
-console.log(bookTitleTransform(3));
+//console.log(bookTitleTransform(3));
 
 // 4
 
 const printBook = (book: Book): void => {
   console.log(`${book.title} by ${book.author}`);
+};
+
+const myBook: Book = {
+  id: 5,
+  title: 'Colors, Backgrounds, and Gradients',
+  author: 'Eric A. Meyer',
+  available: true,
+  category: Category.CSS,
+  pages: 200,
+  markDamaged: (reason: string) => console.log(`Damaged: ${reason}`),
+};
+
+printBook(myBook);
+myBook.markDamaged('missing back cover');
+
+// 4.02
+
+const logDamage = (reason: string) => console.log(`Damaged: ${reason}`);
+logDamage('missng back cover');
+
+// 4.03
+interface Person {
+  name: string;
+  email: string;
+};
+
+interface Author extends Person {
+  numBooksPublished: number;
+};
+
+interface Librarian extends Person {
+  department: string;
+  assistCustomer: (custName: string) => void;
 }
+
+const favoriteAuthor: Author = {
+  email: 'ann@gmail.com',
+  name: 'Anna',
+  numBooksPublished: 10,
+};
+
+/*const favoriteLibrarian: Librarian = {
+  name: 'Boris',
+  email: 'boris@gmail.com',
+  department: 'Classical Literature',
+  assistCustomer: (name: string) => console.log(`Assist ${name}`)
+};*/
+
+// 4.04
+
+const offer: any = {
+  book: {
+    title: 'Essential TypeScript',
+  },
+};
+
+console.log(offer.paper?.magazine);
+
+// 4.05
+
+type BookProperties = keyof Book;
+
+const getBookProp = (book: Book, prop: BookProperties): any => {
+  if (typeof book[prop] === 'function') {
+    return (book[prop] as Function).name;
+  }
+  return book[prop];
+}
+
+console.log(getBookProp(getAllBooks()[0], 'title'));        // Refactoring JavaScript
+console.log(getBookProp(getAllBooks()[0], 'markDamaged'));  // undefined
+// console.log(getBookProp(getAllBooks()[0], 'isbn'));      // error
+
+
+// 05.01
+abstract class ReferenceItem {
+  private _publisher: string;
+  static department: string = 'Research Dep';
+
+  constructor(public title: string, protected year: number) {  
+  }
+
+  printItem(): void {
+    console.log(`${this.title} was published in ${this.year}.`);   
+    console.log(`Department: ${ReferenceItem.department}`);   
+  }
+
+  get publisher(): string {
+    return this._publisher.toUpperCase();
+  }
+
+  set publisher(newPublisher: string) {
+    this._publisher = newPublisher;
+  }
+
+  abstract printCitation(): void;
+}
+
+/*const ref: ReferenceItem = new ReferenceItem('Updated Facts and Figures', 2016);
+ref.printItem();
+ref.publisher = 'Random Publisher';
+console.log(ref);
+console.log(ref.publisher); */
+
+// 5.02
+
+class Encyclopedia extends ReferenceItem {
+  constructor(newTitle: string, newYear: number, public edition: number) {
+    super(newTitle, newYear);
+  }
+
+  printItem(): void {
+    super.printItem();
+    console.log(`Edition: ${this.edition} (${this.year})`);
+  } 
+
+  printCitation(): void {
+    console.log(`${this.title} - ${this.year}`);
+  }
+}
+
+const refBook = new Encyclopedia('Hello Typescript', 2020, 1);
+refBook.printItem();
+
+// 5.03
+refBook.printCitation();
+console.log(refBook);
+
+// 5.04
+
+class UniversityLibrarian implements Librarian {
+
+  name: string;
+  email: string;
+  department: string;
+
+  assistCustomer(custName: string): void {
+    console.log(`${this.name} is assisting ${custName}`);
+  }
+}
+
+const favoriteLibrarian: Librarian = new UniversityLibrarian();
+favoriteLibrarian.name = 'Anna';
+favoriteLibrarian.assistCustomer('Boris');
+
+// 5.05
+type PersonBook = Person & Book;
+
+const personBook: PersonBook = {
+  name: 'Anna',
+  email: 'anna@example.com',
+  author: 'Boris',
+  available: true,
+  category: Category.HTML,
+  id: 1,
+  title: 'Introduction to HTML',
+};
+
+
