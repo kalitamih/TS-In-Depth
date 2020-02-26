@@ -1,8 +1,9 @@
 import { UniversityLibrarian, RefBook, Shelf } from "./classes";
 import { Book, Author, Librarian, Magazine } from "./interfaces";
 import { Category } from "./enums";
-import { PersonBook } from "./types";
-import { getAllBooks, purge } from "./functions";
+import { PersonBook, BookRequiredFields, UpdatedBook, CreateCustomerFunctionType } from "./types";
+import { getAllBooks, purge, createCustomer } from "./functions";
+import Encyclopedia from "./classes/encyclopedia";
 
 
 const showHello = (divName: string, name: string) => {
@@ -107,10 +108,10 @@ console.log(result1);
 const result2 = purge([1, 2, 3, 4]);
 console.log(result2);*/
 
-const bookShelf = new Shelf<Book>();
+/* const bookShelf = new Shelf<Book>();
 inventory.forEach(book => bookShelf.add(book));
 const firstBook = bookShelf.getFirst();
-console.log( firstBook.title);
+console.log(firstBook.title); */
 
 const magazines: Array<Magazine> = [
   { title: 'Programming Language Monthly', publisher: 'Code Mags' },
@@ -120,5 +121,44 @@ const magazines: Array<Magazine> = [
 
 const magazineShelf = new Shelf<Magazine>();
 magazines.forEach(magazine => magazineShelf.add(magazine));
-const firstMagazine = magazineShelf.getFirst();
-console.log(firstMagazine.title);
+/*const firstMagazine = magazineShelf.getFirst();
+console.log(firstMagazine.title); */
+
+// Task 07.03
+magazineShelf.printTitle();
+magazineShelf.find('Five Points');
+
+// Task 07.04
+const book: BookRequiredFields = {
+  id: 1,
+  title: 'Some title',
+  author: 'Mikhail',
+  available: false,
+  category: Category.JavaScript,
+  markDamaged: null,
+  pages: 200
+};
+
+const updatedBook: UpdatedBook = {
+  id: 1,
+  title: 'Refactoring JavaScript'
+};
+
+const params: Parameters<CreateCustomerFunctionType> = ['Anna', 30];
+createCustomer(...params);
+
+// Task 08.01 
+const obj = new UniversityLibrarian();
+console.log(obj);
+
+// Task 08.02
+obj.name = 'Anna';
+obj['printLibrarian']();
+
+// Task 08.03
+obj.assistFaculty = null;
+obj.teachCommunity = null;
+
+// Task 08.04
+const e = new Encyclopedia('Title', 2020, 10);
+e.printItem();
